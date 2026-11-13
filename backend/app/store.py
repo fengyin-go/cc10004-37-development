@@ -4,16 +4,25 @@
 """
 from __future__ import annotations
 
+from __future__ import annotations
+
+import copy
 from typing import Any
 
 from app.seed import SEED_ROWS
+from app.seed_evidence import SEED_EVIDENCE
 
 
 class Store:
     def __init__(self) -> None:
         self._tables: dict[str, list[dict[str, Any]]] = {
-            name: [dict(row) for row in rows] for name, rows in SEED_ROWS.items()
+            name: [copy.deepcopy(row) for row in rows] for name, rows in SEED_ROWS.items()
         }
+        # 数据集管理与趋势预测换成带结构化字段定义、样本行和版本链的示例数据：
+        # 训练证据解释需要真实可算的输入，占位字符串无法支撑核对。
+        # 深层拷贝：修订版本与改样本都会就地追加，不能让种子数据被运行时改坏。
+        for name, rows in SEED_EVIDENCE.items():
+            self._tables[name] = [copy.deepcopy(row) for row in rows]
 
     def module_names(self) -> list[str]:
         return sorted(self._tables)
